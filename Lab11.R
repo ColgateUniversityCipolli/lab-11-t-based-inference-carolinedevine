@@ -55,20 +55,6 @@ sum.further <- dat.fig2g |>
   )
 view(sum.further)
 
-
-further.plot <- ggplot(data = dat.fig2g)+
-  geom_boxplot(aes(x=further_vals, y = after_stat(density)),    # Density histogram
-                 breaks=seq(1,6, length.out=10),
-                 color="grey30", fill="lightgray")+             # Specify bins
-  geom_hline(yintercept=0)+                                   # Add x-axis
-  theme_bw() +                                                # Remove gray background
-  xlab("Further Values") +                   # x-axis label
-  ylab("Density")                                             # y-axis label
-
-
-
-
-
 # Part B: Summarize the Closer Data
 sum.closer <- dat.fig2g |>
   summarize(
@@ -87,3 +73,18 @@ sum.dif <- dat.fig2g |>
   )
 view(sum.dif)
 
+## Combined Plot
+dat.long <- dat.fig2g|>
+  pivot_longer(cols = c("closer_vals", "further_vals", "difference"), 
+               names_to = "Condition",                   
+               values_to = "Fluoresence")
+
+combined.plot <- ggplot(data = dat.long)+
+  geom_boxplot(aes(x=Condition,  
+                   y="Fluoresence (% Change)"))+
+  theme_bw()+                  
+  geom_hline(yintercept=0)+                                   
+  theme_bw() +                                                
+  xlab("Location") +                                    
+  ylab("Fluoresence (% Change)") 
+  
