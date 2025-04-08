@@ -103,19 +103,18 @@ x <- dat.fig2g$closer_vals
 (p.val <- 2*pt(q=-abs(t.stat), df = n-1)) # this is the two tailed version
 # Hedges G
 g <- hedges_g(x = x, mu = mu0, alternative = "greater")
-interpret_hedges_g(g)
-g.list <- as.list(g)
 
 # T-test
 close.stats <- t.test(x=x, mu = mu0, conf.level = 0.95, alternative = "greater") # one tailed t-test
-
+CI <- t.test(x=x, mu = mu0, conf.level = 0.95, alternative = "two.sided")
+?t.test
 # Report Stats
 close.table <- tibble(
   t = close.stats$statistic,
   p = close.stats$p.value,
-  g = g.list$Hedges_g,
-  CI.low = g.list$CI_low,
-  CI.high = g.list$CI_high,
+  g = g$Hedges_g,
+  CI.low = CI$conf.int[1],
+  CI.high = CI$conf.int[2]
 )
 view(close.table)
 
@@ -124,19 +123,18 @@ view(close.table)
 # Hedges G
 x2 <- dat.fig2g$further_vals
 g2 <- hedges_g(x = x2, mu = mu0, alternative = "less")
-interpret_hedges_g(g2)
-g2.list <- as.list(g2)
 
 # T-test
 far.stats <- t.test(x=x2, mu = mu0, conf.level = 0.95, alternative = "less") # one tailed t-test
+CI2 <- t.test(x=x2, mu = mu0, conf.level = 0.95, alternative = "two.sided")
 
 # Report Stats
 far.table <- tibble(
   t = far.stats$statistic,
   p = far.stats$p.value,
-  g = g2.list$Hedges_g,
-  CI.low = g2.list$CI_low,
-  CI.high = g2.list$CI_high,
+  g = g2$Hedges_g,
+  CI.low = CI2$conf.int[1],
+  CI.high = CI2$conf.int[2]
 )
 view(far.table)
 
@@ -144,7 +142,90 @@ view(far.table)
 # Hedges G
 x3 <- dat.fig2g$difference
 g3 <- hedges_g(x = x3, mu = mu0, alternative = "two.sided")
-interpret_hedges_g(g3)
 
 # T-test
 dif.stats <- t.test(x=x3, mu = mu0, conf.level = 0.95, alternative = "two.sided") # paired t-test
+
+# Report Stats
+dif.table <- tibble(
+  t = dif.stats$statistic,
+  p = dif.stats$p.value,
+  g = g3$Hedges_g,
+  CI.low = dif.stats$conf.int[1],
+  CI.high = dif.stats$conf.int[2],
+)
+view(dif.table)
+
+
+################################################################################
+# Question 5
+################################################################################
+
+# Reverse Engineer the hypothesis Test plot
+
+### Part A ###
+
+##########################################################
+# Plot it
+##########################################################
+# For plotting the null distribution
+ggdat.t <- tibble(t=seq(-5,5,length.out=1000))|>
+  mutate(pdf.null = dt(t, df=n-1))
+# For plotting the observed point
+ggdat.obs <- tibble(t    = t.stat, 
+                    y    = 0) # to plot on x-axis
+
+# Resampling to approximate the sampling distribution 
+# on the data
+R <- 1000
+resamples <- tibble(t=numeric(R))
+for(i in 1:R){
+  curr.sample <- sample(x=x,
+                        size=n,
+                        replace=T)
+  resamples$t[i] = (mean(curr.sample)-mu0)/(sd(curr.sample)/sqrt(n))
+}
+
+t.breaks <- c(-5, qt(0.025, df = n-1), # rejection region (left)
+              0, 
+              qt(0.975, df = n-1), 5,  # rejection region (right)
+              t.stat)                  # t-statistic observed
+xbar.breaks <- t.breaks * s/(sqrt(n)) + mu0
+
+# Create Plot
+ggplot() +
+  # null distribution
+  geom_line(data=ggdat.t, 
+            aes(x=t, y=pdf.null))+
+  geom_hline(yintercept=0)+
+  # rejection regions
+  geom_ribbon(data=subset(ggdat.t, t<=qt(0.025, df=n-1)), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="grey", alpha=0.5)+
+  geom_ribbon(data=subset(ggdat.t, t>=qt(0.975, df=n-1)), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="grey", alpha=0.5)+
+  # plot p-value (not visible)
+  geom_ribbon(data=subset(ggdat.t, t>=t.stat), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="reg", alpha=0.25)+
+  # plot observation point
+  geom_point(data=ggdat.obs, aes(x=t, y=y), color="red")+
+  # Resampling Distribution
+  stat_density(data=resamples, 
+               aes(x=t),
+               geom="line", color="grey")+
+  # clean up aesthetics
+  theme_bw()+
+  scale_x_continuous("t",
+                     breaks = round(t.breaks,2),
+                     sec.axis = sec_axis(~.,
+                                         name = bquote(bar(x)),
+                                         breaks = t.breaks,
+                                         labels = round(xbar.breaks,2)))+
+  ylab("Density")+
+  ggtitle("T-Test for Mean Perceived Whiteness of Social Security Recipients",
+          subtitle=bquote(H[0]==3.5*";"~H[a]!=3.5))
+
+
+
