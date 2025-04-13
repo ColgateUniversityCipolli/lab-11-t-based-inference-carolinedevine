@@ -159,7 +159,7 @@ I downloaded excel file called source data for Figure 2g and isolated the column
 \end{kframe}
 \end{knitrout}
 % latex table generated in R 4.4.2 by xtable 1.8-4 package
-% Sun Apr 13 15:44:52 2025
+% Sun Apr 13 16:02:37 2025
 \begin{table}[H]
 \centering
 \begingroup\small
@@ -196,7 +196,7 @@ The data suggest that dopamine in the brains of young zebra finches decreases wh
 \end{kframe}
 \end{knitrout}
 % latex table generated in R 4.4.2 by xtable 1.8-4 package
-% Sun Apr 13 15:44:52 2025
+% Sun Apr 13 16:02:37 2025
 \begin{table}[H]
 \centering
 \begingroup\small
@@ -234,7 +234,7 @@ The data suggest that dopamine in the brains of young zebra finches increases wh
 \end{kframe}
 \end{knitrout}
 % latex table generated in R 4.4.2 by xtable 1.8-4 package
-% Sun Apr 13 15:44:52 2025
+% Sun Apr 13 16:02:37 2025
 \begin{table}[H]
 \centering
 \begingroup\small
@@ -284,8 +284,138 @@ like: ($t=23.99$, $p<0.0001$; $g=1.34$; 95\% CI: 4.43, 4.60).\\
 correction of their $p$-values. I'm waiting to hear back from them via email!
 \begin{enumerate}
   \item ``The close responses differed significantly from 0 ($p=1.63 \times 10^{-8}$).''
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+ \hlcom{### Part A: Close Responses ###}
+\hlkwd{library}\hldef{(effectsize)}
+\hldef{mu0} \hlkwb{<-} \hlnum{0}
+\hldef{x} \hlkwb{<-} \hldef{dat.fig2g}\hlopt{$}\hldef{closer_vals}
+\hlcom{# Hedges G}
+\hldef{g} \hlkwb{<-} \hlkwd{hedges_g}\hldef{(}\hlkwc{x} \hldef{= x,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{alternative} \hldef{=} \hlsng{"greater"}\hldef{)}
+\hlcom{# T-test}
+\hldef{close.stats} \hlkwb{<-} \hlkwd{t.test}\hldef{(}\hlkwc{x}\hldef{=x,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"greater"}\hldef{)} \hlcom{# one tailed t-test}
+\hldef{CI} \hlkwb{<-} \hlkwd{t.test}\hldef{(}\hlkwc{x}\hldef{=x,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)}
+\hlopt{?}\hldef{t.test}
+\hlcom{# Report Stats}
+\hldef{close.table} \hlkwb{<-} \hlkwd{tibble}\hldef{(}
+  \hlkwc{t} \hldef{= close.stats}\hlopt{$}\hldef{statistic,}
+  \hlkwc{p} \hldef{=} \hlkwd{formatC}\hldef{(close.stats}\hlopt{$}\hldef{p.value,} \hlkwc{format} \hldef{=} \hlsng{"e"}\hldef{,} \hlkwc{digits} \hldef{=} \hlnum{2}\hldef{),}
+  \hlkwc{g} \hldef{= g}\hlopt{$}\hldef{Hedges_g,}
+  \hlkwc{CI.low} \hldef{= CI}\hlopt{$}\hldef{conf.int[}\hlnum{1}\hldef{],}
+  \hlkwc{CI.high} \hldef{= CI}\hlopt{$}\hldef{conf.int[}\hlnum{2}\hldef{]}
+\hldef{)}
+\hldef{close.table} \hlkwb{<-} \hlkwd{xtable}\hldef{(close.table,}
+                      \hlkwc{caption} \hldef{=} \hlsng{"One-Sided T-Test For Close Values"}\hldef{,}
+                         \hlkwc{label} \hldef{=} \hlsng{"tab:closetest"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Sun Apr 13 16:02:38 2025
+\begin{table}[H]
+\centering
+\begingroup\small
+\begin{tabular}{rlrrr}
+  \hline
+t & p & g & CI.low & CI.high \\ 
+  \hline
+8.30 & 8.13e-09 & 1.61 & 0.12 & 0.20 \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{One-Sided T-Test For Close Values} 
+\label{tab:closetest}
+\end{table}
+
+  
   \item ``The far responses differed significantly from 0 ($p=5.17 \times 10^{-8}$).''
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### Part B: Far Responses ###}
+\hlcom{# Hedges G}
+\hldef{x2} \hlkwb{<-} \hldef{dat.fig2g}\hlopt{$}\hldef{further_vals}
+\hldef{g2} \hlkwb{<-} \hlkwd{hedges_g}\hldef{(}\hlkwc{x} \hldef{= x2,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{alternative} \hldef{=} \hlsng{"less"}\hldef{)}
+\hlcom{# T-test}
+\hldef{far.stats} \hlkwb{<-} \hlkwd{t.test}\hldef{(}\hlkwc{x}\hldef{=x2,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"less"}\hldef{)} \hlcom{# one tailed t-test}
+\hldef{CI2} \hlkwb{<-} \hlkwd{t.test}\hldef{(}\hlkwc{x}\hldef{=x2,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)}
+\hlcom{# Report Stats}
+\hldef{far.table} \hlkwb{<-} \hlkwd{tibble}\hldef{(}
+  \hlkwc{t} \hldef{= far.stats}\hlopt{$}\hldef{statistic,}
+  \hlkwc{p} \hldef{=} \hlkwd{formatC}\hldef{(far.stats}\hlopt{$}\hldef{p.value,} \hlkwc{format} \hldef{=} \hlsng{"e"}\hldef{,} \hlkwc{digits} \hldef{=} \hlnum{2}\hldef{),}
+  \hlkwc{g} \hldef{= g2}\hlopt{$}\hldef{Hedges_g,}
+  \hlkwc{CI.low} \hldef{= CI2}\hlopt{$}\hldef{conf.int[}\hlnum{1}\hldef{],}
+  \hlkwc{CI.high} \hldef{= CI2}\hlopt{$}\hldef{conf.int[}\hlnum{2}\hldef{]}
+\hldef{)}
+\hldef{far.table} \hlkwb{<-} \hlkwd{xtable}\hldef{(far.table,}
+                      \hlkwc{caption} \hldef{=} \hlsng{"One-Sided T-Test For Farther Values"}\hldef{,}
+                         \hlkwc{label} \hldef{=} \hlsng{"tab:fartest"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Sun Apr 13 16:02:38 2025
+\begin{table}[H]
+\centering
+\begingroup\small
+\begin{tabular}{rlrrr}
+  \hline
+t & p & g & CI.low & CI.high \\ 
+  \hline
+-7.78 & 2.59e-08 & -1.51 & -0.26 & -0.15 \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{One-Sided T-Test For Farther Values} 
+\label{tab:fartest}
+\end{table}
+
+  
+  
   \item ``The difference between populations was significant ($p=1.04 \times10^{-8}$).''
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{### Part C: Difference ###}
+\hlcom{# Hedges G}
+\hldef{x3} \hlkwb{<-} \hldef{dat.fig2g}\hlopt{$}\hldef{difference}
+\hldef{g3} \hlkwb{<-} \hlkwd{hedges_g}\hldef{(}\hlkwc{x} \hldef{= x3,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)}
+\hlcom{# T-test}
+\hldef{dif.stats} \hlkwb{<-} \hlkwd{t.test}\hldef{(}\hlkwc{x}\hldef{=x3,} \hlkwc{mu} \hldef{= mu0,} \hlkwc{conf.level} \hldef{=} \hlnum{0.95}\hldef{,} \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{)} \hlcom{# paired t-test}
+\hlcom{# Report Stats}
+\hldef{dif.table} \hlkwb{<-} \hlkwd{tibble}\hldef{(}
+  \hlkwc{t} \hldef{= dif.stats}\hlopt{$}\hldef{statistic,}
+  \hlkwc{p} \hldef{=} \hlkwd{formatC}\hldef{(dif.stats}\hlopt{$}\hldef{p.value,} \hlkwc{format} \hldef{=} \hlsng{"e"}\hldef{,} \hlkwc{digits} \hldef{=} \hlnum{2}\hldef{),}
+  \hlkwc{g} \hldef{= g3}\hlopt{$}\hldef{Hedges_g,}
+  \hlkwc{CI.low} \hldef{= dif.stats}\hlopt{$}\hldef{conf.int[}\hlnum{1}\hldef{],}
+  \hlkwc{CI.high} \hldef{= dif.stats}\hlopt{$}\hldef{conf.int[}\hlnum{2}\hldef{],}
+\hldef{)}
+\hldef{dif.table} \hlkwb{<-} \hlkwd{xtable}\hldef{(dif.table,}
+                      \hlkwc{caption} \hldef{=} \hlsng{"Two-Tailed T-Test For Paired Difference"}\hldef{,}
+                         \hlkwc{label} \hldef{=} \hlsng{"tab:diftest"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Sun Apr 13 16:02:38 2025
+\begin{table}[H]
+\centering
+\begingroup\small
+\begin{tabular}{rlrrr}
+  \hline
+t & p & g & CI.low & CI.high \\ 
+  \hline
+8.51 & 1.04e-08 & 1.65 & 0.27 & 0.45 \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Two-Tailed T-Test For Paired Difference} 
+\label{tab:diftest}
+\end{table}
+
+  
+  
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CONDUCT THE TESTS

@@ -110,7 +110,7 @@ CI <- t.test(x=x, mu = mu0, conf.level = 0.95, alternative = "two.sided")
 # Report Stats
 close.table <- tibble(
   t = close.stats$statistic,
-  p = close.stats$p.value,
+  p = round(close.stats$p.value,5),
   g = g$Hedges_g,
   CI.low = CI$conf.int[1],
   CI.high = CI$conf.int[2]

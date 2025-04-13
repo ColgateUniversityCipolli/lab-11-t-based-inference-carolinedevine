@@ -185,8 +185,96 @@ like: ($t=23.99$, $p<0.0001$; $g=1.34$; 95\% CI: 4.43, 4.60).\\
 correction of their $p$-values. I'm waiting to hear back from them via email!
 \begin{enumerate}
   \item ``The close responses differed significantly from 0 ($p=1.63 \times 10^{-8}$).''
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+ ### Part A: Close Responses ###
+library(effectsize)
+mu0 <- 0
+x <- dat.fig2g$closer_vals
+# Hedges G
+g <- hedges_g(x = x, mu = mu0, alternative = "greater")
+# T-test
+close.stats <- t.test(x=x, mu = mu0, conf.level = 0.95, alternative = "greater") # one tailed t-test
+CI <- t.test(x=x, mu = mu0, conf.level = 0.95, alternative = "two.sided")
+?t.test
+# Report Stats
+close.table <- tibble(
+  t = close.stats$statistic,
+  p = formatC(close.stats$p.value, format = "e", digits = 2),
+  g = g$Hedges_g,
+  CI.low = CI$conf.int[1],
+  CI.high = CI$conf.int[2]
+) 
+close.table <- xtable(close.table,
+                      caption = "One-Sided T-Test For Close Values", 
+                         label = "tab:closetest")
+@  
+<<echo=FALSE, eval=TRUE, results="asis">>=
+print(close.table,
+      table.placement = "H", 
+      include.rownames = FALSE, 
+      size = "small", 
+      caption.placement = "bottom")
+@
+  
   \item ``The far responses differed significantly from 0 ($p=5.17 \times 10^{-8}$).''
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+### Part B: Far Responses ###
+# Hedges G
+x2 <- dat.fig2g$further_vals
+g2 <- hedges_g(x = x2, mu = mu0, alternative = "less")
+# T-test
+far.stats <- t.test(x=x2, mu = mu0, conf.level = 0.95, alternative = "less") # one tailed t-test
+CI2 <- t.test(x=x2, mu = mu0, conf.level = 0.95, alternative = "two.sided")
+# Report Stats
+far.table <- tibble(
+  t = far.stats$statistic,
+  p = formatC(far.stats$p.value, format = "e", digits = 2),
+  g = g2$Hedges_g,
+  CI.low = CI2$conf.int[1],
+  CI.high = CI2$conf.int[2]
+)
+far.table <- xtable(far.table,
+                      caption = "One-Sided T-Test For Farther Values", 
+                         label = "tab:fartest")
+@  
+<<echo=FALSE, eval=TRUE, results="asis">>=
+print(far.table,
+      table.placement = "H", 
+      include.rownames = FALSE, 
+      size = "small", 
+      caption.placement = "bottom")
+@ 
+  
+  
   \item ``The difference between populations was significant ($p=1.04 \times10^{-8}$).''
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+### Part C: Difference ###
+# Hedges G
+x3 <- dat.fig2g$difference
+g3 <- hedges_g(x = x3, mu = mu0, alternative = "two.sided")
+# T-test
+dif.stats <- t.test(x=x3, mu = mu0, conf.level = 0.95, alternative = "two.sided") # paired t-test
+# Report Stats
+dif.table <- tibble(
+  t = dif.stats$statistic,
+  p = formatC(dif.stats$p.value, format = "e", digits = 2),
+  g = g3$Hedges_g,
+  CI.low = dif.stats$conf.int[1],
+  CI.high = dif.stats$conf.int[2],
+)
+dif.table <- xtable(dif.table,
+                      caption = "Two-Tailed T-Test For Paired Difference", 
+                         label = "tab:diftest")
+@  
+<<echo=FALSE, eval=TRUE, results="asis">>=
+print(dif.table,
+      table.placement = "H", 
+      include.rownames = FALSE, 
+      size = "small", 
+      caption.placement = "bottom")
+@ 
+  
+  
 \end{enumerate}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CONDUCT THE TESTS
