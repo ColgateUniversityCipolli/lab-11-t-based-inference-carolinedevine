@@ -163,11 +163,22 @@ view(dif.table)
 
 # Reverse Engineer the hypothesis Test plot
 
-### Part A ###
+################################################################################
+### Part A: Close Responses ###
+################################################################################
 
-##########################################################
+mu0 <- 0
+x.close <- dat.fig2g$closer_vals
+xbar <- mean(x.close)
+s <- sd(x.close)
+n <- length(x.close)
+t.stat <- (xbar - mu0)/(s/sqrt(n))
+g <- hedges_g(x = x.close, mu = mu0, alternative = "greater")
+p <- close.stats$p.value
+
+#########
 # Plot it
-##########################################################
+#########
 # For plotting the null distribution
 ggdat.t <- tibble(t=seq(-5,5,length.out=1000))|>
   mutate(pdf.null = dt(t, df=n-1))
@@ -180,7 +191,7 @@ ggdat.obs <- tibble(t    = t.stat,
 R <- 1000
 resamples <- tibble(t=numeric(R))
 for(i in 1:R){
-  curr.sample <- sample(x=x,
+  curr.sample <- sample(x= x.close,
                         size=n,
                         replace=T)
   resamples$t[i] = (mean(curr.sample)-mu0)/(sd(curr.sample)/sqrt(n))
@@ -193,22 +204,19 @@ t.breaks <- c(-5, qt(0.025, df = n-1), # rejection region (left)
 xbar.breaks <- t.breaks * s/(sqrt(n)) + mu0
 
 # Create Plot
-ggplot() +
+close.test.plot <- ggplot() +
   # null distribution
   geom_line(data=ggdat.t, 
             aes(x=t, y=pdf.null))+
   geom_hline(yintercept=0)+
-  # rejection regions
-  geom_ribbon(data=subset(ggdat.t, t<=qt(0.025, df=n-1)), 
-              aes(x=t, ymin=0, ymax=pdf.null),
-              fill="grey", alpha=0.5)+
-  geom_ribbon(data=subset(ggdat.t, t>=qt(0.975, df=n-1)), 
+  # rejection regions (one for close)
+  geom_ribbon(data=subset(ggdat.t, t>=qt(0.95, df=n-1)), 
               aes(x=t, ymin=0, ymax=pdf.null),
               fill="grey", alpha=0.5)+
   # plot p-value (not visible)
   geom_ribbon(data=subset(ggdat.t, t>=t.stat), 
               aes(x=t, ymin=0, ymax=pdf.null),
-              fill="reg", alpha=0.25)+
+              fill="red", alpha=0.25)+
   # plot observation point
   geom_point(data=ggdat.obs, aes(x=t, y=y), color="red")+
   # Resampling Distribution
@@ -224,8 +232,7 @@ ggplot() +
                                          breaks = t.breaks,
                                          labels = round(xbar.breaks,2)))+
   ylab("Density")+
-  ggtitle("T-Test for Mean Perceived Whiteness of Social Security Recipients",
-          subtitle=bquote(H[0]==3.5*";"~H[a]!=3.5))
-
+  ggtitle("T-Test for Mean Closer Responses",
+          subtitle=bquote(H[0]==0*";"~H[a]>0))
 
 
