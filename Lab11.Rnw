@@ -94,7 +94,7 @@ print(sum.farther.t1,
       size = "small", 
       caption.placement = "bottom")
 @
-
+The data suggest that dopamine in the brains of young zebra finches decreases when they sing further away. This is visualized in Figure \ref{plot1}. The further away the finch sings shows lower levels of dopamine with the percent change in fluoresence.
    \item Summarize the closer data. Do the data suggest that
    dopamine in the brains of young zebra finches increases when
    they sing closer to their adult song?
@@ -117,7 +117,7 @@ print(sum.closer.t1,
       size = "small", 
       caption.placement = "bottom")
 @
-
+The data suggest that dopamine in the brains of young zebra finches increases when they sing closer to their adult song. This is visualized in Figure \ref{plot1}. The closer the finch sings shows higher levels of dopamine with the percent change in fluoresence.
   \item Summarize the paired differences. Do the data suggest
   that there is a difference between dopamine in the brains of
   young zebra finches when they sing further away compared to 
@@ -141,8 +141,8 @@ print(sum.dif.t1,
       size = "small", 
       caption.placement = "bottom")
 @
-
-<<echo=TRUE, message=FALSE, warning=FALSE, fig.cap="Boxplot of Closer, Further, and Difference Values", fig.width=5, fig.height=4, fig.align="center", fig.pos="H">>=
+The data suggest that there is a difference between dopamine in the brains of young zebra finches increases when they sing closer to their adult song compared to when they sing farther away. This is visualized in Figure \ref{plot1}.
+<<plot1, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE, size='scriptsize'>>=
 ## Combined Plot
 dat.long <- dat.fig2g|>
   pivot_longer(cols = c("closer_vals", "further_vals", "difference"), 
@@ -158,8 +158,18 @@ combined.plot <- ggplot(data = dat.long)+
   xlab("Location") +                                    
   ylab("Fluoresence (% Change)") +
   ggtitle("Dopamine Levels by Distance")
-print(combined.plot)
 @
+\begin{figure}[H]
+\begin{center}
+<<echo=FALSE, warning=FALSE, message=FALSE, fig.dim=c(5,4), fig.align='center'>>=
+combined.plot
+@
+\caption{Boxplot of Closer, Further, and Difference Values}
+\label{plot1} 
+\end{center}
+\end{figure}
+
+Figure \ref{plot1} shows the three conditions: closer values, farther values, and the paired difference between the first two. For the closer values, the median is above zero which indicates that the percent change in fluorescence is positive. It can be seen that when the young zebra finches sing closer to their adult song, there is an increase in dopamine levels. Controversy, the farther values show a median below zero with majority of the values being negative. This indicates the opposite: that there is a decrease in dopamine levels when they sing farther away. The difference is above zero which shows that the percent change in fluorescence is higher when birds sing closer in comparison to further away. 
 
   \item \textbf{Optional Challenge:} Can you reproduce Figure 2(g)?
   Note that the you can use \texttt{geom\_errorbar()} to plot

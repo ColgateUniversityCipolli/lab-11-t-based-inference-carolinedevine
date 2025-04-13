@@ -159,7 +159,7 @@ I downloaded excel file called source data for Figure 2g and isolated the column
 \end{kframe}
 \end{knitrout}
 % latex table generated in R 4.4.2 by xtable 1.8-4 package
-% Sun Apr 13 15:27:58 2025
+% Sun Apr 13 15:44:52 2025
 \begin{table}[H]
 \centering
 \begingroup\small
@@ -175,7 +175,7 @@ n & mean & sd & skew \\
 \label{tab:sumFurther}
 \end{table}
 
-
+The data suggest that dopamine in the brains of young zebra finches decreases when they sing further away. This is visualized in Figure \ref{plot1}. The further away the finch sings shows lower levels of dopamine with the percent change in fluoresence.
    \item Summarize the closer data. Do the data suggest that
    dopamine in the brains of young zebra finches increases when
    they sing closer to their adult song?
@@ -196,7 +196,7 @@ n & mean & sd & skew \\
 \end{kframe}
 \end{knitrout}
 % latex table generated in R 4.4.2 by xtable 1.8-4 package
-% Sun Apr 13 15:27:58 2025
+% Sun Apr 13 15:44:52 2025
 \begin{table}[H]
 \centering
 \begingroup\small
@@ -212,7 +212,7 @@ mean & sd & skew \\
 \label{tab:sumCloser}
 \end{table}
 
-
+The data suggest that dopamine in the brains of young zebra finches increases when they sing closer to their adult song. This is visualized in Figure \ref{plot1}. The closer the finch sings shows higher levels of dopamine with the percent change in fluoresence.
   \item Summarize the paired differences. Do the data suggest
   that there is a difference between dopamine in the brains of
   young zebra finches when they sing further away compared to 
@@ -234,7 +234,7 @@ mean & sd & skew \\
 \end{kframe}
 \end{knitrout}
 % latex table generated in R 4.4.2 by xtable 1.8-4 package
-% Sun Apr 13 15:27:58 2025
+% Sun Apr 13 15:44:52 2025
 \begin{table}[H]
 \centering
 \begingroup\small
@@ -250,37 +250,25 @@ mean & sd & skew \\
 \label{tab:sumDiff}
 \end{table}
 
+The data suggest that there is a difference between dopamine in the brains of young zebra finches increases when they sing closer to their adult song compared to when they sing farther away. This is visualized in Figure \ref{plot1}.
 
+\begin{figure}[H]
+\begin{center}
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{## Combined Plot}
-\hldef{dat.long} \hlkwb{<-} \hldef{dat.fig2g|>}
-  \hlkwd{pivot_longer}\hldef{(}\hlkwc{cols} \hldef{=} \hlkwd{c}\hldef{(}\hlsng{"closer_vals"}\hldef{,} \hlsng{"further_vals"}\hldef{,} \hlsng{"difference"}\hldef{),}
-               \hlkwc{names_to} \hldef{=} \hlsng{"Condition"}\hldef{,}
-               \hlkwc{values_to} \hldef{=} \hlsng{"Fluoresence"}\hldef{)}
-
-\hldef{combined.plot} \hlkwb{<-} \hlkwd{ggplot}\hldef{(}\hlkwc{data} \hldef{= dat.long)}\hlopt{+}
-  \hlkwd{geom_boxplot}\hldef{(}\hlkwd{aes}\hldef{(}\hlkwc{x}\hldef{=Condition,}
-                   \hlkwc{y}\hldef{=Fluoresence))}\hlopt{+}
-  \hlkwd{theme_bw}\hldef{()}\hlopt{+}
-  \hlkwd{geom_hline}\hldef{(}\hlkwc{yintercept}\hldef{=}\hlnum{0}\hldef{)}\hlopt{+}
-  \hlkwd{theme_bw}\hldef{()} \hlopt{+}
-  \hlkwd{xlab}\hldef{(}\hlsng{"Location"}\hldef{)} \hlopt{+}
-  \hlkwd{ylab}\hldef{(}\hlsng{"Fluoresence (% Change)"}\hldef{)} \hlopt{+}
-  \hlkwd{ggtitle}\hldef{(}\hlsng{"Dopamine Levels by Distance"}\hldef{)}
-\hlkwd{print}\hldef{(combined.plot)}
-\end{alltt}
-\end{kframe}\begin{figure}[H]
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
 {\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-1} 
 
 }
 
-\caption[Boxplot of Closer, Further, and Difference Values]{Boxplot of Closer, Further, and Difference Values}\label{fig:unnamed-chunk-10}
-\end{figure}
 
 \end{knitrout}
+\caption{Boxplot of Closer, Further, and Difference Values}
+\label{plot1} 
+\end{center}
+\end{figure}
+
+Figure \ref{plot1} shows the three conditions: closer values, farther values, and the paired difference between the first two. For the closer values, the median is above zero which indicates that the percent change in fluorescence is positive. It can be seen that when the young zebra finches sing closer to their adult song, there is an increase in dopamine levels. Controversy, the farther values show a median below zero with majority of the values being negative. This indicates the opposite: that there is a decrease in dopamine levels when they sing farther away. The difference is above zero which shows that the percent change in fluorescence is higher when birds sing closer in comparison to further away. 
 
   \item \textbf{Optional Challenge:} Can you reproduce Figure 2(g)?
   Note that the you can use \texttt{geom\_errorbar()} to plot
