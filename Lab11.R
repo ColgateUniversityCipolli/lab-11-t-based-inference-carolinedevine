@@ -36,7 +36,6 @@ power <- power.t.test(delta = 0.65, sig.level = 0.05,
 # closer (blue) and further (red) renditions
 
 dat.fig2g <- read_csv("fig2gdata.csv")
-
 dat.fig2g <- dat.fig2g |>
   mutate(difference = closer_vals - further_vals)
 View(dat.fig2g)
@@ -236,3 +235,154 @@ close.test.plot <- ggplot() +
           subtitle=bquote(H[0]==0*";"~H[a]>0))
 
 
+################################################################################
+### Part B: Far Responses ###
+################################################################################
+
+mu0 <- 0
+x.far <- dat.fig2g$further_vals
+xbar <- mean(x.far)
+s <- sd(x.far)
+n <- length(x.far)
+t.stat <- (xbar - mu0)/(s/sqrt(n))
+g2 <- hedges_g(x = x.far, mu = mu0, alternative = "less")
+p2 <- far.stats$p.value
+
+#########
+# Plot it
+#########
+# For plotting the null distribution
+ggdat.t <- tibble(t=seq(-5,5,length.out=1000))|>
+  mutate(pdf.null = dt(t, df=n-1))
+# For plotting the observed point
+ggdat.obs <- tibble(t    = t.stat, 
+                    y    = 0) # to plot on x-axis
+
+# Resampling to approximate the sampling distribution 
+# on the data
+R <- 1000
+resamples <- tibble(t=numeric(R))
+for(i in 1:R){
+  curr.sample <- sample(x= x.far,
+                        size=n,
+                        replace=T)
+  resamples$t[i] = (mean(curr.sample)-mu0)/(sd(curr.sample)/sqrt(n))
+}
+
+t.breaks <- c(-5, qt(0.025, df = n-1), # rejection region (left)
+              0, 
+              qt(0.975, df = n-1), 5,  # rejection region (right)
+              t.stat)                  # t-statistic observed
+xbar.breaks <- t.breaks * s/(sqrt(n)) + mu0
+
+# Create Plot
+far.test.plot <- ggplot() +
+  # null distribution
+  geom_line(data=ggdat.t, 
+            aes(x=t, y=pdf.null))+
+  geom_hline(yintercept=0)+
+  # rejection regions (one for far)
+  geom_ribbon(data=subset(ggdat.t, t>=qt(0.05, df=n-1)), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="grey", alpha=0.5)+
+  # plot p-value (not visible)
+  geom_ribbon(data=subset(ggdat.t, t<=t.stat), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="red", alpha=0.25)+
+  # plot observation point
+  geom_point(data=ggdat.obs, aes(x=t, y=y), color="red")+
+  # Resampling Distribution
+  stat_density(data=resamples, 
+               aes(x=t),
+               geom="line", color="grey")+
+  # clean up aesthetics
+  theme_bw()+
+  scale_x_continuous("t",
+                     breaks = round(t.breaks,2),
+                     sec.axis = sec_axis(~.,
+                                         name = bquote(bar(x)),
+                                         breaks = t.breaks,
+                                         labels = round(xbar.breaks,2)))+
+  ylab("Density")+
+  ggtitle("T-Test for Mean Farther Responses",
+          subtitle=bquote(H[0]==0*";"~H[a]<0))
+
+################################################################################
+### Part C: Difference Responses ###
+################################################################################
+
+mu0 <- 0
+x.diff <- dat.fig2g$difference
+xbar <- mean(x.diff)
+s <- sd(x.diff)
+n <- length(x.diff)
+t.stat <- (xbar - mu0)/(s/sqrt(n))
+g3 <- hedges_g(x = x.diff, mu = mu0, alternative = "two.sided")
+p3 <- dif.stats$p.value
+
+#########
+# Plot it
+#########
+# For plotting the null distribution
+ggdat.t <- tibble(t=seq(-5,5,length.out=1000))|>
+  mutate(pdf.null = dt(t, df=n-1))
+# For plotting the observed point
+ggdat.obs <- tibble(t    = t.stat, 
+                    y    = 0) # to plot on x-axis
+
+# Resampling to approximate the sampling distribution 
+# on the data
+R <- 1000
+resamples <- tibble(t=numeric(R))
+for(i in 1:R){
+  curr.sample <- sample(x= x.diff,
+                        size=n,
+                        replace=T)
+  resamples$t[i] = (mean(curr.sample)-mu0)/(sd(curr.sample)/sqrt(n))
+}
+
+t.breaks <- c(-5, qt(0.025, df = n-1), # rejection region (left)
+              0, 
+              qt(0.975, df = n-1), 5,  # rejection region (right)
+              t.stat)                  # t-statistic observed
+xbar.breaks <- t.breaks * s/(sqrt(n)) + mu0
+
+# Create Plot
+diff.test.plot <- ggplot() +
+  # null distribution
+  geom_line(data=ggdat.t, 
+            aes(x=t, y=pdf.null))+
+  geom_hline(yintercept=0)+
+  # rejection regions - left
+  geom_ribbon(data=subset(ggdat.t, t<=qt(0.025, df=n-1)), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="grey", alpha=0.5)+
+  # rejection regions - right
+  geom_ribbon(data=subset(ggdat.t, t>=qt(0.975, df=n-1)), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="grey", alpha=0.5)+
+  # plot p-value (not visible)
+  geom_ribbon(data=subset(ggdat.t, t>=t.stat), 
+              aes(x=t, ymin=0, ymax=pdf.null),
+              fill="red", alpha=0.25)+
+  # plot observation point
+  geom_point(data=ggdat.obs, aes(x=t, y=y), color="red")+
+  # Resampling Distribution
+  stat_density(data=resamples, 
+               aes(x=t),
+               geom="line", color="grey")+
+  # clean up aesthetics
+  theme_bw()+
+  scale_x_continuous("t",
+                     breaks = round(t.breaks,2),
+                     sec.axis = sec_axis(~.,
+                                         name = bquote(bar(x)),
+                                         breaks = t.breaks,
+                                         labels = round(xbar.breaks,2)))+
+  ylab("Density")+
+  ggtitle("T-Test for Paired Differences (close - far)",
+          subtitle=bquote(H[0]==0*";"~H[a]!=0))
+
+## COMBINED ##
+library(patchwork)
+close.test.plot + far.test.plot + diff.test.plot

@@ -41,6 +41,14 @@ conduct a power analysis. How many observations would the researchers
 need to detect a moderate-to-large effect ($d=0.65$) when using 
 $\alpha=0.05$ and default power (0.80) for a two-sided one sample 
 $t$ test.
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+library(pwr)
+(power <- power.t.test(delta = 0.65, sig.level = 0.05,
+             power = 0.8,
+             type = "one.sample",
+             alternative = "two.sided"))
+@
+The number of observations that the researchers need to detect a moderate-to-large effect of d = 0.65 is n = 20.58 which is around 21 observations. This was completed using the \texttt{pwr} package in \texttt{R} \citep{pwr}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COLLECT DATA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,6 +58,12 @@ do to collect the data for Figure 2(g). Note that you only need the
 \texttt{closer\_vals} and \texttt{further\_vals}. Ensure to 
 \texttt{mutate()} the data to get a difference 
 (e.g., \texttt{closer\_vals - further\_vals}).
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+dat.fig2g <- read_csv("fig2gdata.csv")
+dat.fig2g <- dat.fig2g |>
+  mutate(difference = closer_vals - further_vals)
+@
+I downloaded excel file called source data for Figure 2g and isolated the columns for the data needed to replicate Figure 2g. Those columns were closer\_vals and further\_vals. I computed a new variable called difference which quantifies the change in dopamine levels between the closer and farther values. Figure 2g is a scatter plot of averaged delta(F) / F signals for all syllables for closer (blue) and further (red) renditions \citep{Kasdin25}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUMMARIZE DATA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,13 +72,95 @@ do to collect the data for Figure 2(g). Note that you only need the
   \item Summarize the further data. Do the data suggest that
    dopamine in the brains of young zebra finches decreases when
    they sing further away?
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+library(e1071)
+library(xtable)
+# Part A: Summarize the Further Data
+sum.further <- dat.fig2g |>
+  summarize(
+    n = n(),
+    mean = mean(further_vals, na.rm = T),
+    sd = sd(further_vals, na.rm = T),
+    skew = skewness(further_vals, na.rm=T)
+  )
+sum.farther.t1 <- xtable(sum.further, 
+                         caption = "Summary of Further Data", 
+                         label = "tab:sumFurther")
+@
+<<echo=FALSE, eval=TRUE, results="asis">>=
+print(sum.farther.t1,
+      table.placement = "H", 
+      include.rownames = FALSE, 
+      size = "small", 
+      caption.placement = "bottom")
+@
+
    \item Summarize the closer data. Do the data suggest that
    dopamine in the brains of young zebra finches increases when
    they sing closer to their adult song?
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+# Part B: Summarize the Closer Data
+sum.closer <- dat.fig2g |>
+  summarize(
+    mean = mean(closer_vals, na.rm = T),
+    sd = sd(closer_vals, na.rm = T),
+    skew = skewness(closer_vals, na.rm=T)
+  )
+sum.closer.t1 <- xtable(sum.closer, 
+                         caption = "Summary of Closer Data", 
+                         label = "tab:sumCloser")
+@
+<<echo=FALSE, eval=TRUE, results="asis">>=
+print(sum.closer.t1,
+      table.placement = "H", 
+      include.rownames = FALSE, 
+      size = "small", 
+      caption.placement = "bottom")
+@
+
   \item Summarize the paired differences. Do the data suggest
   that there is a difference between dopamine in the brains of
   young zebra finches when they sing further away compared to 
   closer to their adult song?
+<<echo=TRUE, message=FALSE, warning=FALSE>>=
+# Part C: Summarize the Paired Differences
+sum.dif <- dat.fig2g |>
+  summarize(
+    mean = mean(difference, na.rm = T),
+    sd = sd(difference, na.rm = T),
+    skew = skewness(difference, na.rm=T)
+  )
+sum.dif.t1 <- xtable(sum.dif, 
+                         caption = "Summary of Paired Differences Data", 
+                         label = "tab:sumDiff")
+@
+<<echo=FALSE, eval=TRUE, results="asis">>=
+print(sum.dif.t1,
+      table.placement = "H", 
+      include.rownames = FALSE, 
+      size = "small", 
+      caption.placement = "bottom")
+@
+
+<<echo=TRUE, message=FALSE, warning=FALSE, fig.cap="Boxplot of Closer, Further, and Difference Values", fig.width=5, fig.height=4, fig.align="center", fig.pos="H">>=
+## Combined Plot
+dat.long <- dat.fig2g|>
+  pivot_longer(cols = c("closer_vals", "further_vals", "difference"), 
+               names_to = "Condition",                   
+               values_to = "Fluoresence")
+
+combined.plot <- ggplot(data = dat.long)+
+  geom_boxplot(aes(x=Condition,  
+                   y=Fluoresence))+
+  theme_bw()+                  
+  geom_hline(yintercept=0)+                                   
+  theme_bw() +                                                
+  xlab("Location") +                                    
+  ylab("Fluoresence (% Change)") +
+  ggtitle("Dopamine Levels by Distance")
+print(combined.plot)
+@
+
   \item \textbf{Optional Challenge:} Can you reproduce Figure 2(g)?
   Note that the you can use \texttt{geom\_errorbar()} to plot
   the range created by adding the mean $\pm$ one standard deviation.

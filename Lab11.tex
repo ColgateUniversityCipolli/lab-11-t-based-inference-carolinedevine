@@ -89,6 +89,29 @@ conduct a power analysis. How many observations would the researchers
 need to detect a moderate-to-large effect ($d=0.65$) when using 
 $\alpha=0.05$ and default power (0.80) for a two-sided one sample 
 $t$ test.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hldef{(pwr)}
+\hldef{(power} \hlkwb{<-} \hlkwd{power.t.test}\hldef{(}\hlkwc{delta} \hldef{=} \hlnum{0.65}\hldef{,} \hlkwc{sig.level} \hldef{=} \hlnum{0.05}\hldef{,}
+             \hlkwc{power} \hldef{=} \hlnum{0.8}\hldef{,}
+             \hlkwc{type} \hldef{=} \hlsng{"one.sample"}\hldef{,}
+             \hlkwc{alternative} \hldef{=} \hlsng{"two.sided"}\hldef{))}
+\end{alltt}
+\begin{verbatim}
+## 
+##      One-sample t test power calculation 
+## 
+##               n = 20.58044
+##           delta = 0.65
+##              sd = 1
+##       sig.level = 0.05
+##           power = 0.8
+##     alternative = two.sided
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+The number of observations that the researchers need to detect a moderate-to-large effect of d = 0.65 is n = 20.58 which is around 21 observations. This was completed using the \texttt{pwr} package in \texttt{R} \citep{pwr}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % COLLECT DATA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,6 +121,16 @@ do to collect the data for Figure 2(g). Note that you only need the
 \texttt{closer\_vals} and \texttt{further\_vals}. Ensure to 
 \texttt{mutate()} the data to get a difference 
 (e.g., \texttt{closer\_vals - further\_vals}).
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hldef{dat.fig2g} \hlkwb{<-} \hlkwd{read_csv}\hldef{(}\hlsng{"fig2gdata.csv"}\hldef{)}
+\hldef{dat.fig2g} \hlkwb{<-} \hldef{dat.fig2g |>}
+  \hlkwd{mutate}\hldef{(}\hlkwc{difference} \hldef{= closer_vals} \hlopt{-} \hldef{further_vals)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+I downloaded excel file called source data for Figure 2g and isolated the columns for the data needed to replicate Figure 2g. Those columns were closer\_vals and further\_vals. I computed a new variable called difference which quantifies the change in dopamine levels between the closer and farther values. Figure 2g is a scatter plot of averaged delta(F) / F signals for all syllables for closer (blue) and further (red) renditions \citep{Kasdin25}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SUMMARIZE DATA
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,13 +139,149 @@ do to collect the data for Figure 2(g). Note that you only need the
   \item Summarize the further data. Do the data suggest that
    dopamine in the brains of young zebra finches decreases when
    they sing further away?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hldef{(e1071)}
+\hlkwd{library}\hldef{(xtable)}
+\hlcom{# Part A: Summarize the Further Data}
+\hldef{sum.further} \hlkwb{<-} \hldef{dat.fig2g |>}
+  \hlkwd{summarize}\hldef{(}
+    \hlkwc{n} \hldef{=} \hlkwd{n}\hldef{(),}
+    \hlkwc{mean} \hldef{=} \hlkwd{mean}\hldef{(further_vals,} \hlkwc{na.rm} \hldef{= T),}
+    \hlkwc{sd} \hldef{=} \hlkwd{sd}\hldef{(further_vals,} \hlkwc{na.rm} \hldef{= T),}
+    \hlkwc{skew} \hldef{=} \hlkwd{skewness}\hldef{(further_vals,} \hlkwc{na.rm}\hldef{=T)}
+  \hldef{)}
+\hldef{sum.farther.t1} \hlkwb{<-} \hlkwd{xtable}\hldef{(sum.further,}
+                         \hlkwc{caption} \hldef{=} \hlsng{"Summary of Further Data"}\hldef{,}
+                         \hlkwc{label} \hldef{=} \hlsng{"tab:sumFurther"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Sun Apr 13 15:27:58 2025
+\begin{table}[H]
+\centering
+\begingroup\small
+\begin{tabular}{rrrr}
+  \hline
+n & mean & sd & skew \\ 
+  \hline
+ 25 & -0.20 & 0.13 & -1.04 \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Summary of Further Data} 
+\label{tab:sumFurther}
+\end{table}
+
+
    \item Summarize the closer data. Do the data suggest that
    dopamine in the brains of young zebra finches increases when
    they sing closer to their adult song?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Part B: Summarize the Closer Data}
+\hldef{sum.closer} \hlkwb{<-} \hldef{dat.fig2g |>}
+  \hlkwd{summarize}\hldef{(}
+    \hlkwc{mean} \hldef{=} \hlkwd{mean}\hldef{(closer_vals,} \hlkwc{na.rm} \hldef{= T),}
+    \hlkwc{sd} \hldef{=} \hlkwd{sd}\hldef{(closer_vals,} \hlkwc{na.rm} \hldef{= T),}
+    \hlkwc{skew} \hldef{=} \hlkwd{skewness}\hldef{(closer_vals,} \hlkwc{na.rm}\hldef{=T)}
+  \hldef{)}
+\hldef{sum.closer.t1} \hlkwb{<-} \hlkwd{xtable}\hldef{(sum.closer,}
+                         \hlkwc{caption} \hldef{=} \hlsng{"Summary of Closer Data"}\hldef{,}
+                         \hlkwc{label} \hldef{=} \hlsng{"tab:sumCloser"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Sun Apr 13 15:27:58 2025
+\begin{table}[H]
+\centering
+\begingroup\small
+\begin{tabular}{rrr}
+  \hline
+mean & sd & skew \\ 
+  \hline
+0.16 & 0.09 & 0.30 \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Summary of Closer Data} 
+\label{tab:sumCloser}
+\end{table}
+
+
   \item Summarize the paired differences. Do the data suggest
   that there is a difference between dopamine in the brains of
   young zebra finches when they sing further away compared to 
   closer to their adult song?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# Part C: Summarize the Paired Differences}
+\hldef{sum.dif} \hlkwb{<-} \hldef{dat.fig2g |>}
+  \hlkwd{summarize}\hldef{(}
+    \hlkwc{mean} \hldef{=} \hlkwd{mean}\hldef{(difference,} \hlkwc{na.rm} \hldef{= T),}
+    \hlkwc{sd} \hldef{=} \hlkwd{sd}\hldef{(difference,} \hlkwc{na.rm} \hldef{= T),}
+    \hlkwc{skew} \hldef{=} \hlkwd{skewness}\hldef{(difference,} \hlkwc{na.rm}\hldef{=T)}
+  \hldef{)}
+\hldef{sum.dif.t1} \hlkwb{<-} \hlkwd{xtable}\hldef{(sum.dif,}
+                         \hlkwc{caption} \hldef{=} \hlsng{"Summary of Paired Differences Data"}\hldef{,}
+                         \hlkwc{label} \hldef{=} \hlsng{"tab:sumDiff"}\hldef{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+% latex table generated in R 4.4.2 by xtable 1.8-4 package
+% Sun Apr 13 15:27:58 2025
+\begin{table}[H]
+\centering
+\begingroup\small
+\begin{tabular}{rrr}
+  \hline
+mean & sd & skew \\ 
+  \hline
+0.36 & 0.21 & 0.77 \\ 
+   \hline
+\end{tabular}
+\endgroup
+\caption{Summary of Paired Differences Data} 
+\label{tab:sumDiff}
+\end{table}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Combined Plot}
+\hldef{dat.long} \hlkwb{<-} \hldef{dat.fig2g|>}
+  \hlkwd{pivot_longer}\hldef{(}\hlkwc{cols} \hldef{=} \hlkwd{c}\hldef{(}\hlsng{"closer_vals"}\hldef{,} \hlsng{"further_vals"}\hldef{,} \hlsng{"difference"}\hldef{),}
+               \hlkwc{names_to} \hldef{=} \hlsng{"Condition"}\hldef{,}
+               \hlkwc{values_to} \hldef{=} \hlsng{"Fluoresence"}\hldef{)}
+
+\hldef{combined.plot} \hlkwb{<-} \hlkwd{ggplot}\hldef{(}\hlkwc{data} \hldef{= dat.long)}\hlopt{+}
+  \hlkwd{geom_boxplot}\hldef{(}\hlkwd{aes}\hldef{(}\hlkwc{x}\hldef{=Condition,}
+                   \hlkwc{y}\hldef{=Fluoresence))}\hlopt{+}
+  \hlkwd{theme_bw}\hldef{()}\hlopt{+}
+  \hlkwd{geom_hline}\hldef{(}\hlkwc{yintercept}\hldef{=}\hlnum{0}\hldef{)}\hlopt{+}
+  \hlkwd{theme_bw}\hldef{()} \hlopt{+}
+  \hlkwd{xlab}\hldef{(}\hlsng{"Location"}\hldef{)} \hlopt{+}
+  \hlkwd{ylab}\hldef{(}\hlsng{"Fluoresence (% Change)"}\hldef{)} \hlopt{+}
+  \hlkwd{ggtitle}\hldef{(}\hlsng{"Dopamine Levels by Distance"}\hldef{)}
+\hlkwd{print}\hldef{(combined.plot)}
+\end{alltt}
+\end{kframe}\begin{figure}[H]
+
+{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-10-1} 
+
+}
+
+\caption[Boxplot of Closer, Further, and Difference Values]{Boxplot of Closer, Further, and Difference Values}\label{fig:unnamed-chunk-10}
+\end{figure}
+
+\end{knitrout}
+
   \item \textbf{Optional Challenge:} Can you reproduce Figure 2(g)?
   Note that the you can use \texttt{geom\_errorbar()} to plot
   the range created by adding the mean $\pm$ one standard deviation.
