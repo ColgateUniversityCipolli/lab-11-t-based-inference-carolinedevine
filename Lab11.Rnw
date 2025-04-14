@@ -364,7 +364,7 @@ close.test.plot
 \end{center}
 \end{figure}
 
-
+Figure \ref{plot2} shows the hypothesis test plot for the closer responses. We can clearly visualize the t-statistic to the right of zero (black curve representing the theoretical t-distribution under the null hypothesis). This indicates that there is an increase in the dopamine levels as the young zebra finches sing closer to their adult songs.
 
   \item Question 4, part(b).
 <<plot3, echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE, size='scriptsize'>>=
@@ -449,6 +449,8 @@ far.test.plot
 \label{plot3} 
 \end{center}
 \end{figure}
+
+Figure \ref{plot3} shows the hypothesis test plot for the far responses. We can clearly visualize the t-statistic to the left of zero (black curve representing the theoretical t-distribution under the null hypothesis). This indicates that there is a large decrease in the dopamine levels as the young zebra finches sing further away from their adult songs.
 
 
   \item Question 4, part(c).
@@ -540,6 +542,7 @@ diff.test.plot
 \end{center}
 \end{figure}
 
+Figure \ref{plot4} shows the hypothesis test plot for the paired differences. Since the t-statistic is greater than zero, we can visually assess, along with our numerical summaries in question 4, that the dopamine levels of the young zebra finches are higher when they are singing closer to their adult song. 
 
 
 \end{enumerate}
